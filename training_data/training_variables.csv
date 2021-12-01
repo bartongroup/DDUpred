@@ -1,0 +1,136 @@
+package,quantity,variable
+Canvas,Lipophilicity,CVS_AlogP
+Canvas,Sp3/rot bonds,CVS_ChiralCenterCount
+Canvas,Sp3/rot bonds,CVS_ChiralCenterCountAllPossible
+Canvas,Unknown,CVS_Estate
+Canvas,HBA/HBD,CVS_HBAcceptors
+Canvas,HBA/HBD,CVS_HBD
+Canvas,Sp3/rot bonds,CVS_HeavyAtomCount
+Canvas,Sp3/rot bonds,CVS_Molar_refractivity
+Canvas,Lipophilicity,CVS_MW
+Canvas,Unknown,CVS_Polar_Score
+Canvas,Lipophilicity,CVS_Polar_Surface_Area
+Canvas,Lipophilicity,CVS_RingCount
+Canvas,Sp3/rot bonds,CVS_Rotatable-bonds
+DataWarrior,Lipophilicity,DW_cLogP
+DataWarrior,Solubility,DW_cLogS
+DataWarrior,Charge,DW_Electronegative Atoms
+DataWarrior,HBA/HBD,DW_HBAcceptors
+DataWarrior,HBA/HBD,DW_HBDonors
+DataWarrior,Lipophilicity,DW_Polar Surface Area
+DataWarrior,Lipophilicity,DW_Relative_PolarSurfaceArea
+DataWarrior,Sp3/rot bonds,DW_Rotatable Bonds
+DataWarrior,Sp3/rot bonds,DW_sp3-Atoms
+DataWarrior,Sp3/rot bonds,DW_Stereo Centers
+DataWarrior,Lipophilicity,DW_Total Surface Area
+Experiment,Lipophilicity,Exp_CHI-LOGD
+Experiment,Lipophilicity/Clearance,Exp_CLi Heps mouse
+Experiment,Lipophilicity/Clearance,Exp_CLi Mics mouse
+Experiment,Permeability/Lipophilicity,Exp_efflux_ratio MDCK-mdr1 PGP
+Experiment,Solubility,Exp_FaSSIF_Sol
+Experiment,Solubility,Exp_GSK-CAD SOL
+Experiment,Lipophilicity,Exp_GSK-ChromLogD
+Experiment,Solubility,Exp_GSK-CLND SOL
+Experiment,Solubility,Exp_GSK-FaSSIF
+Experiment,Permeability,Exp_MDCK_Pass_Perm papp_ab
+Experiment,Permeability,Exp_MDCK-mdr1 PGP papp_ab
+Experiment,Permeability,Exp_PAMPA-Papp
+Experiment,Permeability/Solubility,Exp_PAMPA-RECOVERY
+Experiment,Charge,Exp_pKa-Sirius PKA1
+Experiment,Charge,Exp_pKa-Sirius PKA2
+Experiment,Charge,Exp_pKa-Sirius PKA3
+Experiment,Lipophilicity,Exp_PPB mouse
+Experiment,Solubility,Exp_realSOL_7.4
+Gastroplus,Charge,G+_pH2_FAnion
+Gastroplus,Charge,G+_pH2_FCation
+Gastroplus,Charge,G+_pH2_FUnion
+Gastroplus,Charge,G+_pH2_FZwitter
+Gastroplus,Lipophilicity,G+_pH2_MlogP
+Gastroplus,Lipophilicity,G+_pH2_S+logD
+Gastroplus,Lipophilicity,G+_pH2_S+logP
+Gastroplus,Solubility,G+_pH2_S+S_pH
+Gastroplus,Solubility,G+_pH2_S+Sw
+Gastroplus,Charge,G+_pH7.4_AcidAtoms
+Gastroplus,Charge,G+_pH7.4_BaseAtoms
+Gastroplus,Permeability,G+_pH7.4_BBB_Filter
+Gastroplus,Lipophilicity/Clearance,G+_pH7.4_CYP_HLM_CLint
+Gastroplus,Lipophilicity/Clearance,G+_pH7.4_CYP_HLM_CLint_bound
+Gastroplus,Lipophilicity/Clearance,G+_pH7.4_CYP_RLM_CLint
+Gastroplus,Lipophilicity/Clearance,G+_pH7.4_CYP_RLM_CLint_bound
+Gastroplus,Permeability,G+_pH7.4_DiffCoef
+Gastroplus,Charge,G+_pH7.4_FAnion
+Gastroplus,Charge,G+_pH7.4_FCation
+Gastroplus,Charge,G+_pH7.4_FUnion
+Gastroplus,Charge,G+_pH7.4_FZwitter
+Gastroplus,Lipophilicity,G+_pH7.4_hum_fup%
+Gastroplus,Charge,G+_pH7.4_Isoel_pH
+Gastroplus,Permeability,G+_pH7.4_LogBB
+Gastroplus,Unknown/Air water partition,G+_pH7.4_logHLC
+Gastroplus,Unknown,G+_pH7.4_OATP1B1_Inh
+Gastroplus,Unknown,G+_pH7.4_Pgp_Inh
+Gastroplus,Unknown/Lipophilicity?,G+_pH7.4_Pgp_Substr
+Gastroplus,Lipophilicity,G+_pH7.4_rat_fup%
+Gastroplus,Unknown,G+_pH7.4_RBP
+Gastroplus,Unknown,G+_pH7.4_RBP_rat
+Gastroplus,Charge,G+_pH7.4_S+Acidic_pKa
+Gastroplus,Charge,G+_pH7.4_S+Basic_pKa
+Gastroplus,Solubility,G+_pH7.4_S+FaSSGF
+Gastroplus,Solubility,G+_pH7.4_S+FaSSIF
+Gastroplus,Solubility,G+_pH7.4_S+FeSSIF
+Gastroplus,Lipophilicity,G+_pH7.4_S+fumic
+Gastroplus,Lipophilicity,G+_pH7.4_S+logD
+Gastroplus,Lipophilicity,G+_pH7.4_S+logP
+Gastroplus,Permeability/Lipophilicity,G+_pH7.4_S+MDCK
+Gastroplus,Charge,G+_pH7.4_S+Mixed_pKa
+Gastroplus,Permeability,G+_pH7.4_S+Peff
+Gastroplus,Charge,G+_pH7.4_S+pH_Satd
+Gastroplus,Solubility,G+_pH7.4_S+S_Intrins
+Gastroplus,Solubility,G+_pH7.4_S+S_pH
+Gastroplus,Solubility,G+_pH7.4_S+Sw
+Gastroplus,Solubility,G+_pH7.4_SolFactor
+Gastroplus,Solubility,G+_pH7.4_SupSatn
+Gastroplus,Charge,G+_pH7.4_Vd
+MOKA,Lipophilicity,Moka.LogD
+MOKA,Lipophilicity,Moka.LogP
+MOKA,Charge,Moka_status
+MOKA,Charge,MoKa.IEP
+SwissADME,Sp3/rot bonds,SADME_#Aromatic heavy atoms
+SwissADME,HBA/HBD,SADME_#H-bond acceptors
+SwissADME,HBA/HBD,SADME_#H-bond donors
+SwissADME,Sp3/rot bonds,SADME_#Heavy atoms
+SwissADME,Sp3/rot bonds,SADME_#Rotatable bonds
+SwissADME,Solubility,SADME_Ali Class
+SwissADME,Solubility,SADME_Ali Log S
+SwissADME,Solubility,SADME_Ali Solubility (mg/ml)
+SwissADME,Solubility,SADME_Ali Solubility (mol/l)
+SwissADME,Permeability/Lipophilicity,SADME_BBB permeant
+SwissADME,Lipophilicity,SADME_Consensus Log P
+SwissADME,Solubility,SADME_ESOL Class
+SwissADME,Solubility,SADME_ESOL Log S
+SwissADME,Solubility,SADME_ESOL Solubility (mg/ml)
+SwissADME,Solubility,SADME_ESOL Solubility (mol/l)
+SwissADME,Sp3/rot bonds,SADME_Fraction Csp3
+SwissADME,Permeability,SADME_GI absorption
+SwissADME,Lipophilicity,SADME_iLOGP
+SwissADME,Permeability,SADME_log Kp (cm/s)
+SwissADME,Lipophilicity,SADME_MLOGP
+SwissADME,Lipophilicity/Unknown,SADME_Pgp substrate
+SwissADME,Solubility,SADME_Silicos-IT class
+SwissADME,Lipophilicity,SADME_Silicos-IT Log P
+SwissADME,Solubility,SADME_Silicos-IT LogSw
+SwissADME,Solubility,SADME_Silicos-IT Solubility (mg/ml)
+SwissADME,Solubility,SADME_Silicos-IT Solubility (mol/l)
+SwissADME,Lipophilicity,SADME_TPSA
+SwissADME,Lipophilicity,SADME_WLOGP
+SwissADME,Lipophilicity,SADME_XLOGP3
+StarDrop,HBA/HBD,Strp_HBA
+StarDrop,HBA/HBD,Strp_HBD
+StarDrop,Sp3/rot bonds,Strp_Heavy Atom Count
+StarDrop,Lipophilicity,Strp_logD
+StarDrop,Lipophilicity,Strp_logP
+StarDrop,Solubility,Strp_LogS
+StarDrop,Sp3/rot bonds,Strp_ROT_BONDS
+StarDrop,Unknown,Strp_SFI
+StarDrop,Sp3/rot bonds,Strp_SP3_RATIO
+StarDrop,Lipophilicity,Strp_TPSA
+StarDrop,Unknown,Strp_FLEX
