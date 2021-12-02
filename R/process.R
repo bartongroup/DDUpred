@@ -35,16 +35,6 @@ process_training_data <- function(raw, info, cols_id, cols_remove=NULL, cols_nol
   cols_int <- props %>% filter(!null & integer) %>% pull(original_variable)
   cols_numcat <- props %>% filter(!null & numcat) %>% pull(original_variable)
   cols_cat <- props %>% filter(!null & categorical) %>% pull(original_variable)
-  
-  if(verbose) {
-    cat("  Variables found:\n")
-    cat(sprintf("    %3d not usable\n", length(cols_null)))
-    cat(sprintf("    %3d real\n", length(cols_real)))
-    cat(sprintf("    %3d of them converted to logarithm\n", sum(props$log_trans)))
-    cat(sprintf("    %3d integer\n", length(cols_int)))
-    cat(sprintf("    %3d numeric converted into categorical\n", length(cols_numcat)))
-    cat(sprintf("    %3d categorical\n", length(cols_cat)))
-  }
 
   # make tables for ids, numerical and categorical variables
   d_id <- dg[, cols_id]
@@ -67,6 +57,7 @@ process_training_data <- function(raw, info, cols_id, cols_remove=NULL, cols_nol
   cat_props <- categorical_variable_summary(d_cat)
   
   # separate response and predictor variables
+  cols_exp <- props %>% filter(!null & package == "Experiment")
   cols_resp_num <- props %>% filter(!null & response & numeric) %>% pull(variable)
   cols_resp_cat <- props %>% filter(!null & response & categorical) %>% pull(variable)
   cols_pred_num <- props %>% filter(!null & !response & numeric) %>% pull(variable)
@@ -93,10 +84,24 @@ process_training_data <- function(raw, info, cols_id, cols_remove=NULL, cols_nol
     mutate(descriptor = category == "descriptor", software = category == "software")
   
   gr <- group_variables(tab, vars, cut_tree, min_group_unique)
+  final_vars <- gr$variables %>% filter(variable %in% colnames(tab))
+  
+  if(verbose) {
+    cat("  Variables found:\n")
+    cat(sprintf("    %3d not usable\n", length(cols_null)))
+    cat(sprintf("    %3d real\n", length(cols_real)))
+    cat(sprintf("    %3d of them converted to logarithm\n", sum(props$log_trans)))
+    cat(sprintf("    %3d integer\n", length(cols_int)))
+    cat(sprintf("    %3d numeric converted into categorical\n", length(cols_numcat)))
+    cat(sprintf("    %3d categorical\n", length(cols_cat)))
+    cat(sprintf("    %3d experimental\n", length(cols_exp)))
+    cat("  Grouping of similar variables perfomed:\n")
+    cat(sprintf("    %3d variables selected for downstream analysis\n", sum(final_vars$grouped)))
+  }
   
   list(
     all_variables = vars,
-    variables = gr$variables %>% filter(variable %in% colnames(tab)),
+    variables = final_vars,
     cols_id = cols_id,
     missing_stats = mis_stats,
     hc = gr$hc,
@@ -121,7 +126,7 @@ process_test_data <- function(raw, train_vars, cols_id, cols_remove=NULL, cols_p
   }
   
   descriptor_vars <- train_vars %>% 
-    filter((descriptor | software) & (is.na(cluster) | representative))
+    filter((descriptor | software) & grouped)
   
   test_vars <- colnames(dg)
   
@@ -136,17 +141,6 @@ process_test_data <- function(raw, train_vars, cols_id, cols_remove=NULL, cols_p
   cols_int <- props %>% filter(!null & integer) %>% pull(original_variable)
   cols_numcat <- props %>% filter(!null & numcat) %>% pull(original_variable)
   cols_cat <- props %>% filter(!null & categorical) %>% pull(original_variable)
-  
-  if(verbose) {
-    cat("  Variables found:\n")
-    cat(sprintf("    %3d not usable\n", length(cols_null)))
-    cat(sprintf("    %3d real\n", length(cols_real)))
-    cat(sprintf("    %3d of them converted to logarithm\n", sum(props$log_trans)))
-    cat(sprintf("    %3d integer\n", length(cols_int)))
-    cat(sprintf("    %3d numeric converted into categorical\n", length(cols_numcat)))
-    cat(sprintf("    %3d categorical\n", length(cols_cat)))
-  }
-  
   
   # make tables for ids, numerical and categorical variables
   d_id <- dg[, cols_id]
@@ -181,7 +175,14 @@ process_test_data <- function(raw, train_vars, cols_id, cols_remove=NULL, cols_p
   # all variable info
   vars <- props %>% 
     left_join(bind_rows(cat_props, num_props) %>% select(variable, levels, top_count, zeroes), by="variable")
-  
+
+  if(verbose) {
+    cat("  Variables found:\n")
+    cat(sprintf("    %3d variables in test set\n", length(test_vars)))
+    cat(sprintf("    %3d selected variables in the training set\n",nrow(descriptor_vars)))
+    cat(sprintf("    %3d test variables match training set\n", nrow(vars)))
+  }
+    
   list(
     variables = vars,
     cols_id = cols_id,

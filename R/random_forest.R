@@ -132,23 +132,21 @@ predict_new_rf_exp <- function(set, resp_var, newdat, min_unique=2, min_good=150
   mdl$prediction <- bind_cols(pred_aggregate, pred_individual) %>% 
     add_column(Name = sdat$names, .before=1)
   
+  mdl$new_data <- sdat$data
+  
   return(mdl)
 }
 
 # returns models and predictions with errors for a set of experimental variables
-predict_new_rf_exps <- function(set, exp_vars, newdat, min_unique=2, min_good=1500, max_cat_levels=10, seed=123) {
-  pb <- txtProgressBar(min=1, max=length(exp_vars) + 1, style=3)
-  i <- 1
-  setTxtProgressBar(pb, i)
+predict_new_rf_exps <- function(set, exp_vars, newdat, min_unique=2, min_good=1500, max_cat_levels=10, seed=123, verbose=FALSE) {
+  if(verbose) cat("Predicting variables:\n")
   mdls <- map(exp_vars, function(resp_var) {
+    if(verbose) cat(paste("    ", resp_var, "\n"))
     pr <- predict_new_rf_exp(set, resp_var, newdat, min_unique, min_good, max_cat_levels, seed)
-    i <<- i + 1
-    setTxtProgressBar(pb, i)
-    return(pr)
   }) %>% 
     set_names(exp_vars)
-  close(pb)
   
+
   pr <- map_dfr(exp_vars, function(resp_var) {
     mdls[[resp_var]]$prediction %>% add_column(response_variable = resp_var, .before=1)  
   }) %>% 

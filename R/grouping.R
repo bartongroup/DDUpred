@@ -54,9 +54,15 @@ group_variables <- function(tab, variables, cut_tree=0.25, min_unique=100) {
   
   # software predictions
   soft_num <- vars_num %>% filter(category == "software")
-  soft_hc <- make_clust(tab[, soft_num$variable])
-  soft_hc_cut <- cut_clusters(soft_hc, "sw", cut_tree)
-  soft_hc_groups <- group_clusters(soft_hc_cut, soft_num)
+  if(nrow(soft_num) > 0) {
+    soft_hc <- make_clust(tab[, soft_num$variable])
+    soft_hc_cut <- cut_clusters(soft_hc, "sw", cut_tree)
+    soft_hc_groups <- group_clusters(soft_hc_cut, soft_num)
+  } else {
+    soft_hc <- NULL
+    soft_hc_cut <- NULL
+    soft_hc_groups <- NULL
+  }
   
   # merge results
   hc_cut <- bind_rows(desc_hc_cut, soft_hc_cut)

@@ -32,7 +32,7 @@ ddu_prediction <- function(train_file, info_file, test_file, verbose=TRUE) {
     verbose = verbose
   )
 
-  #predict_new_rf_exps(train_set, EXP_VARIABLES, test_set$tab)
+  predict_new_rf_exps(train_set, EXP_VARIABLES, test_set$tab, verbose=verbose)
 }
 
 
