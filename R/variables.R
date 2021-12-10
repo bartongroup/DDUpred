@@ -182,34 +182,6 @@ variable_correlation <- function(tab) {
 }
 
 
-# ANOVA of categorical software predicted variables vs experimental variables
-anova_resp <- function(set, max_unique = 10, min_good = 100) {
-  sel <- set$variables %>% 
-    filter(response & !null & (package == "Experiment" | (class == "categorical" & unique < max_unique & unique > 1 & good> min_good))) %>% 
-    mutate(experimental = package == "Experiment") %>% 
-    select(variable, experimental)
-  
-  t_ex <- set$tab[, c("Name", sel %>% filter(experimental) %>% pull(variable))] %>% 
-    pivot_longer(-Name, names_to="exp", values_to="y") %>% 
-    drop_na()
-  t_sf <- set$tab[, c("Name", sel %>% filter(!experimental) %>% pull(variable))] %>% 
-    pivot_longer(-Name, names_to="soft", values_to="x") %>% 
-    drop_na()
-  
-  inner_join(t_ex, t_sf, by="Name") %>% 
-    group_by(exp, soft) %>% 
-    mutate(nlev = length(unique(as.character(x)))) %>% 
-    filter(nlev > 1) %>% 
-    nest(data = c(Name, x, y)) %>% 
-    mutate(
-      fit = map(data, function(d) {lm(y ~ x, data=d) %>% aov()}),
-      tidied = map(fit, broom::tidy)
-    ) %>% 
-    unnest(tidied) %>% 
-    select(-c(data, fit)) %>% 
-    filter(term == "x")
-}
-
 
 # when NAs are dropped, some of the variables might end up having
 # only one level, we need to reject them before modelling
@@ -224,9 +196,9 @@ reduce_for_levels <- function(tab, min_unique) {
 }
 
 # For a given data set 'set', response variable 'resp_var' and category 'categ', create a subset of the main set, with variables with at least 'min_unique' unique values, at least 'min_good' good (non-missing) values, at most 'max_cat_levels' levels in categorical variables. The subset is done of grouped (cluster centroids) variables with no 'mis' flag. 
-select_predictors_for_models <- function(set, resp_var, categ, min_unique, min_good, max_cat_levels, sel=NULL) {
+select_predictors_for_models <- function(set, resp_var, min_unique, min_good, max_cat_levels, sel=NULL) {
   pred <- set$variables %>% 
-    filter(category %in% categ & !null & !mis & grouped & good >= min_good & (class == "numeric" | unique <= max_cat_levels)) 
+    filter(predictor & !null & !mis & grouped & good >= min_good & (class == "numeric" | unique <= max_cat_levels)) 
   if(!is.null(sel)) pred <- filter(pred, variable %in% sel)
   pred_vars <- pull(pred, variable)
   reduce_for_levels(set$tab[, c("Name", resp_var, pred_vars)], min_unique) %>% 

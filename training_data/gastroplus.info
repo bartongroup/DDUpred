@@ -1,0 +1,37 @@
+variable,type
+Name,id
+CAS #,none
+human VDss (L/kg),response
+human CL (mL/min/kg),response
+UnknownPropertyName1[1],none
+UnknownPropertyName1[2],none
+MRT (h),none
+terminal  t1/2 (h),response
+Reference[1],none
+Reference[2],none
+Reference[3],none
+Reference[4],none
+Reference[5],none
+Comments[1],none
+Comments[2],none
+Comments[3],none
+Comments[4],none
+Comments[5],none
+Comments[6],none
+Comments[7],none
+Comments[8],none
+Notes[1],none
+Notes[2],none
+Notes[3],none
+Notes[4],none
+Notes[5],none
+Notes[6],none
+Notes[7],none
+Notes[8],none
+Year of first disclosure,none
+CHEMBLID,none
+SYNONYMS,none
+Formula,none
+FULL_MOLFORMULA,none
+Unknown_,none
+Vd,none

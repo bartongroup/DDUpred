@@ -1,10 +1,7 @@
-# Run random forest on the set 'set', for the response variable 'resp_var', and
-# category of dependent vars 'categ' (can be "software" - for software-predicted
-# variables, e.g. from Canvas, DataWarrior etc,  or "descriptor" - basic
-# compound descriptors).
-random_forest_model <- function(set, resp_var, categ, min_unique, min_good, max_cat_levels=10, sel=NULL, seed=666, ...) {
+# Run random forest on the set 'set', for the response variable 'resp_var'
+random_forest_model <- function(set, resp_var, min_unique, min_good, max_cat_levels=10, sel=NULL, seed=666, ...) {
   set.seed(seed)
-  d <- select_predictors_for_models(set, resp_var, categ, min_unique, min_good, max_cat_levels, sel=sel) %>% 
+  d <- select_predictors_for_models(set, resp_var, min_unique, min_good, max_cat_levels, sel=sel) %>% 
     drop_na()
   rows <- d$Name
   d <- d %>% select(-Name)
@@ -106,11 +103,11 @@ make_rf_xdat <- function(dat, x_var) {
 predict_new_rf_exp <- function(set, resp_var, newdat, min_unique=2, min_good=1500, max_cat_levels=10, seed=123, n_tree=1000) {
   
   # match good variables from the training with variables in the new set
-  train <- select_predictors_for_models(set, resp_var, c("descriptor", "software"), min_unique, min_good, max_cat_levels) %>%
+  train <- select_predictors_for_models(set, resp_var, min_unique, min_good, max_cat_levels) %>%
     select(-c(Name, response))
   common_vars <- intersect(colnames(train), colnames(newdat))
   
-  mdl <- random_forest_model(set, resp_var, c("descriptor", "software"), min_unique, min_good, max_cat_levels, sel=common_vars, seed=seed, ntree=n_tree, importance=TRUE)
+  mdl <- random_forest_model(set, resp_var, min_unique, min_good, max_cat_levels, sel=common_vars, seed=seed, ntree=n_tree, importance=TRUE)
   
   # need to rename variables for RF
   sdat <- make_rf_xdat(newdat, mdl$x_var)
@@ -138,19 +135,20 @@ predict_new_rf_exp <- function(set, resp_var, newdat, min_unique=2, min_good=150
 }
 
 # returns models and predictions with errors for a set of experimental variables
-predict_new_rf_exps <- function(set, exp_vars, newdat, min_unique=2, min_good=1500, max_cat_levels=10, seed=123, verbose=FALSE) {
+predict_new_rf_exps <- function(set, newdat, min_unique=2, min_good=1500, max_cat_levels=10, seed=123, verbose=FALSE) {
   if(verbose) cat("Predicting variables:\n")
-  mdls <- map(exp_vars, function(resp_var) {
+  resp_vars <- set$variables %>% filter(response) %>% pull(variable)
+  mdls <- map(resp_vars, function(resp_var) {
     if(verbose) cat(paste("    ", resp_var, "\n"))
     pr <- predict_new_rf_exp(set, resp_var, newdat, min_unique, min_good, max_cat_levels, seed)
   }) %>% 
-    set_names(exp_vars)
+    set_names(resp_vars)
   
 
-  pr <- map_dfr(exp_vars, function(resp_var) {
+  pr <- map_dfr(resp_vars, function(resp_var) {
     mdls[[resp_var]]$prediction %>% add_column(response_variable = resp_var, .before=1)  
   }) %>% 
-    mutate(response_variable = factor(response_variable, levels=exp_vars))
+    mutate(response_variable = factor(response_variable, levels=resp_vars))
   
   imp <- rf_importance(mdls)
   

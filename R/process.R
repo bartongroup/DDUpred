@@ -1,21 +1,26 @@
 # Main function to process raw data
 
-process_training_data <- function(raw, info, cols_id, cols_remove=NULL, cols_nolog=NULL, cols_pka=NULL,
+process_training_data <- function(raw, info, cols_nolog=NULL,
                         missing_row_limit = 0.95, max_missing = 100, sigma_limit = 5,
                         cut_tree=0.25, min_group_unique=100,
-                        relevel_moka_status=TRUE, verbose=FALSE) {
+                        verbose=FALSE) {
   
   if(verbose) cat("Processing training data\n")
+  cols_id <- info %>% filter(type == "id") %>% pull(variable)
+  cols_remove <- info %>% filter(type == "none") %>% pull(variable)
   
   dg <- raw
   
   # remove specified variables
-  if(!is.null(cols_remove)) dg <- dg %>% select(-all_of(cols_remove))
+  dg <- dg %>% select(-all_of(cols_remove))
   
   # properties of all variables
   props <- variable_properties(dg %>% select(-all_of(cols_id)), cols_nolog = cols_nolog) %>% 
-    left_join(select(info, variable, package, quantity), by=c("original_variable" = "variable")) %>% 
-    mutate(response = !is.na(package))
+    left_join(info, by=c("original_variable" = "variable")) %>% 
+    mutate(response = type == "response") %>%
+    mutate(response = replace_na(response, FALSE)) %>% 
+    select(-type) %>% 
+    mutate(predictor = !response)
   
   # find variables that lead to no more than missing_row_limit missing rows
   # and with no more than max_missing missing values
@@ -57,32 +62,20 @@ process_training_data <- function(raw, info, cols_id, cols_remove=NULL, cols_nol
   cat_props <- categorical_variable_summary(d_cat)
   
   # separate response and predictor variables
-  cols_exp <- props %>% filter(!null & package == "Experiment")
   cols_resp_num <- props %>% filter(!null & response & numeric) %>% pull(variable)
   cols_resp_cat <- props %>% filter(!null & response & categorical) %>% pull(variable)
-  cols_pred_num <- props %>% filter(!null & !response & numeric) %>% pull(variable)
-  cols_pred_cat <- props %>% filter(!null & !response & categorical) %>% pull(variable)
+  cols_pred_num <- props %>% filter(!null & predictor & numeric) %>% pull(variable)
+  cols_pred_cat <- props %>% filter(!null & predictor & categorical) %>% pull(variable)
   d_resp <- bind_cols(d_cat[, cols_resp_cat], d_numlog[, cols_resp_num])
   d_pred <- bind_cols(d_cat[, cols_pred_cat], d_numlog[, cols_pred_num])
   
   # full table of data: id columns, response columns and predictor columns
   tab <- bind_cols(d_id, d_resp, d_pred)
   
-  # Moka_status should be ordered
-  if(relevel_moka_status) {
-    tab$Moka_status <- fct_relevel(tab$Moka_status, "Acid", "Neutral", "Base")
-  }
-  
   # all variable info
   vars <- props %>% 
-    left_join(bind_rows(cat_props, num_props) %>% select(variable, levels, top_count, zeroes), by="variable") %>% 
-    mutate(
-      category = if_else(is.na(package), "descriptor", "software")
-    ) %>% 
-    # experimental values are not "software"
-    mutate(category = as_factor(if_else(category == "software" & package == "Experiment", as.character(NA), category))) %>%  
-    mutate(descriptor = category == "descriptor", software = category == "software")
-  
+    left_join(bind_rows(cat_props, num_props) %>% select(variable, levels, top_count, zeroes), by="variable")
+
   gr <- group_variables(tab, vars, cut_tree, min_group_unique)
   final_vars <- gr$variables %>% filter(variable %in% colnames(tab))
   
@@ -94,7 +87,6 @@ process_training_data <- function(raw, info, cols_id, cols_remove=NULL, cols_nol
     cat(sprintf("    %3d integer\n", length(cols_int)))
     cat(sprintf("    %3d numeric converted into categorical\n", length(cols_numcat)))
     cat(sprintf("    %3d categorical\n", length(cols_cat)))
-    cat(sprintf("    %3d experimental\n", length(cols_exp)))
     cat("  Grouping of similar variables perfomed:\n")
     cat(sprintf("    %3d variables selected for downstream analysis\n", sum(final_vars$grouped)))
   }
@@ -112,21 +104,13 @@ process_training_data <- function(raw, info, cols_id, cols_remove=NULL, cols_nol
 
 
 
-process_test_data <- function(raw, train_vars, cols_id, cols_remove=NULL, cols_pka=NULL, relevel_moka_status=TRUE, verbose=FALSE) {
+process_test_data <- function(raw, train, verbose=FALSE) {
   if(verbose) cat("Processing test data\n")
   
   dg <- raw
-  
-  # remove specified variables
-  if(!is.null(cols_remove)) dg <- dg %>% select(-all_of(cols_remove))
-  
-  # convert pKa strings into numbers
-  if(!is.null(cols_pka)) {
-    dg[, cols_pka] <- dg[, cols_pka] %>% map_dfc(~convert_pka(.x))
-  }
-  
-  descriptor_vars <- train_vars %>% 
-    filter((descriptor | software) & grouped)
+
+  descriptor_vars <- train$variables %>% 
+    filter(predictor & grouped)
   
   test_vars <- colnames(dg)
   
@@ -135,7 +119,8 @@ process_test_data <- function(raw, train_vars, cols_id, cols_remove=NULL, cols_p
     filter(original_variable %in% test_vars)
   
   good_vars <- props$original_variable
-  missing_vars <- setdiff(descriptor_vars$original_variable, test_vars)
+  not_in_test <- setdiff(descriptor_vars$original_variable, test_vars)
+  not_in_train <- setdiff(test_vars, descriptor_vars$original_variable)
   
   cols_real <- props %>% filter(!null & real) %>% pull(original_variable)
   cols_int <- props %>% filter(!null & integer) %>% pull(original_variable)
@@ -143,7 +128,7 @@ process_test_data <- function(raw, train_vars, cols_id, cols_remove=NULL, cols_p
   cols_cat <- props %>% filter(!null & categorical) %>% pull(original_variable)
   
   # make tables for ids, numerical and categorical variables
-  d_id <- dg[, cols_id]
+  d_id <- dg[, train$cols_id]
   d_real <- dg[, cols_real]
   d_int <- dg[, cols_int]
   d_cat <- dg[, cols_cat] 
@@ -164,29 +149,40 @@ process_test_data <- function(raw, train_vars, cols_id, cols_remove=NULL, cols_p
   num_props <- numeric_variable_summary(d_numlog) 
   cat_props <- categorical_variable_summary(d_cat)
   
-  # full table of data: id columns, response columns and predictor columns
-  tab <- bind_cols(d_id, d_numlog, d_cat)
-  
-  # Moka_status should be ordered
-  if(relevel_moka_status) {
-    tab$Moka_status <- fct_relevel(tab$Moka_status, "Acid", "Neutral", "Base")
+  # level mismatch
+  cat_match <- cat_props %>% 
+    left_join(props, by="variable")
+  if(!is.null(cat_match$levels.x)) {
+    mismatch <- cat_match %>% 
+      filter(levels.x != levels.y) %>% 
+      pull(variable)
+    cat_props <- cat_props %>% filter(!(variable %in% mismatch))
+    d_cat <- d_cat %>% select(-all_of(mismatch))
   }
   
   # all variable info
   vars <- props %>% 
     left_join(bind_rows(cat_props, num_props) %>% select(variable, levels, top_count, zeroes), by="variable")
-
+  
+  
+  # full table of data: id columns, response columns and predictor columns
+  tab <- bind_cols(d_id, d_numlog, d_cat)
+  
   if(verbose) {
     cat("  Variables found:\n")
     cat(sprintf("    %3d variables in test set\n", length(test_vars)))
     cat(sprintf("    %3d selected variables in the training set\n",nrow(descriptor_vars)))
     cat(sprintf("    %3d test variables match training set\n", nrow(vars)))
+    cat(sprintf("    %3d training variables not found in test set\n", length(not_in_test)))
+    cat(sprintf("    %3d categorical variables with mismatched levels\n", length(mismatch)))
   }
     
   list(
     variables = vars,
     cols_id = cols_id,
-    missing_variables = missing_vars,
+    not_in_test = not_in_test,
+    not_in_train = not_in_train,
+    mismatched_levels = mismatch,
     tab = tab
   )
 }

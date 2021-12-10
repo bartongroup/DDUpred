@@ -1,0 +1,24 @@
+variable,type
+Name,id
+Molecule Name,none
+Exp_CHI-LOGD,response
+Exp_GSK-ChromLogD,response
+Exp_FaSSIF_Sol,none
+Exp_GSK-FaSSIF,none
+Exp_GSK-CAD SOL,none
+Exp_GSK-CLND SOL,none
+Exp_realSOL_7.4,response
+Exp_MDCK-mdr1 PGP papp_ab,none
+Exp_MDCK_Pass_Perm papp_ab,none
+Exp_efflux_ratio MDCK-mdr1 PGP,none
+Exp_PAMPA-Papp,response
+Exp_PAMPA-RECOVERY,none
+Exp_CLi Heps mouse,response
+Exp_CLi Mics mouse,response
+Exp_PPB mouse,response
+Exp_pKa-Sirius PKA1,none
+Exp_pKa-Sirius PKA2,none
+Exp_pKa-Sirius PKA3,none
+G+_pH7.4_S+Acidic_pKa,none
+G+_pH7.4_S+Mixed_pKa,none
+G+_pH7.4_S+Basic_pKa,none
