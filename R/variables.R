@@ -56,16 +56,20 @@ numeric_variable_summary <- function(tab) {
 }
 
 categorical_variable_summary <- function(tab) {
-  map_df(tab, function(v) {
-    vn <- na.omit(v)
-    tibble(
-      good = sum(!is.na(v)),
-      missing = sum(is.na(v)),
-      unique = length(unique(vn)),
-      levels = paste(levels(vn), collapse=","),
-      top_count = max(fct_count(vn)$n)
-    )
-  }) %>% add_column(variable = names(tab), .before="good")
+  if(ncol(tab) > 0) {
+    map_df(tab, function(v) {
+      vn <- na.omit(v)
+      tibble(
+        good = sum(!is.na(v)),
+        missing = sum(is.na(v)),
+        unique = length(unique(vn)),
+        levels = paste(levels(vn), collapse=","),
+        top_count = max(fct_count(vn)$n)
+      )
+    }) %>% add_column(variable = names(tab), .before="good")
+  } else {
+    tibble(variable = character(0), good = integer(0), missing = integer(0), unique = integer(0), levels = character(0), top_count = integer(0))
+  }
 }
 
 missing_stats <- function(d, id_cols, n_top = 30) {
@@ -195,10 +199,10 @@ reduce_for_levels <- function(tab, min_unique) {
   tab %>% select(-all_of(bad_vars))
 }
 
-# For a given data set 'set', response variable 'resp_var' and category 'categ', create a subset of the main set, with variables with at least 'min_unique' unique values, at least 'min_good' good (non-missing) values, at most 'max_cat_levels' levels in categorical variables. The subset is done of grouped (cluster centroids) variables with no 'mis' flag. 
-select_predictors_for_models <- function(set, resp_var, min_unique, min_good, max_cat_levels, sel=NULL) {
+# For a given data set 'set', response variable 'resp_var', create a subset of the main set, with variables with at least 'min_unique' unique values, at least 'min_good' good (non-missing) values, at most 'max_cat_levels' levels in categorical variables. The subset is done of selected (cluster centroids) variables with no 'mis' flag. 
+select_predictors_selecteds <- function(set, resp_var, min_unique, min_good, max_cat_levels, sel=NULL) {
   pred <- set$variables %>% 
-    filter(predictor & !null & !mis & grouped & good >= min_good & (class == "numeric" | unique <= max_cat_levels)) 
+    filter(predictor & !null & !mis & selected & good >= min_good & (class == "numeric" | unique <= max_cat_levels)) 
   if(!is.null(sel)) pred <- filter(pred, variable %in% sel)
   pred_vars <- pull(pred, variable)
   reduce_for_levels(set$tab[, c("Name", resp_var, pred_vars)], min_unique) %>% 
@@ -206,3 +210,16 @@ select_predictors_for_models <- function(set, resp_var, min_unique, min_good, ma
     filter(!is.na(response))
 }
 
+
+
+test_min_good <- function(set, resp_var, min_unique=2, max_cat_levels=10, min_range=10) {
+  max_range <- nrow(set$tab)
+  pb <- txtProgressBar(min = 1, max = max_range - min_range + 1, initial = 1, style = 3)
+  tb <- map_dfr(min_range:max_range, function(mg) {
+    x <- select_predictors_selecteds(set, resp_var, min_unique=min_unique, min_good=mg, max_cat_levels=max_cat_levels)
+    setTxtProgressBar(pb, mg - min_range + 1)
+    c(min_good = mg, n_rows = nrow(x), n_cols = ncol(x) - 2)
+  })
+  close(pb)
+  tb
+}

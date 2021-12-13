@@ -5,7 +5,7 @@ process_training_data <- function(raw, info, cols_nolog=NULL,
                         cut_tree=0.25, min_group_unique=100,
                         verbose=FALSE) {
   
-  if(verbose) cat("Processing training data\n")
+  if(verbose) cat("\nProcessing training data\n")
   cols_id <- info %>% filter(type == "id") %>% pull(variable)
   cols_remove <- info %>% filter(type == "none") %>% pull(variable)
   
@@ -88,7 +88,7 @@ process_training_data <- function(raw, info, cols_nolog=NULL,
     cat(sprintf("    %3d numeric converted into categorical\n", length(cols_numcat)))
     cat(sprintf("    %3d categorical\n", length(cols_cat)))
     cat("  Grouping of similar variables perfomed:\n")
-    cat(sprintf("    %3d variables selected for downstream analysis\n", sum(final_vars$grouped)))
+    cat(sprintf("    %3d variables selected for downstream analysis\n", sum(final_vars$selected)))
   }
   
   list(
@@ -105,23 +105,33 @@ process_training_data <- function(raw, info, cols_nolog=NULL,
 
 
 process_test_data <- function(raw, train, verbose=FALSE) {
-  if(verbose) cat("Processing test data\n")
+  if(verbose) cat("\nProcessing test data\n")
   
   dg <- raw
 
-  descriptor_vars <- train$variables %>% 
-    filter(predictor & grouped)
+  train_vars <- train$variables %>% 
+    filter(predictor)
   
-  test_vars <- colnames(dg)
+  descriptor_vars <- train$variables %>% 
+    filter(predictor & selected)
+  
+  test_vars <- tibble(original_variable = colnames(dg))
   
   # properties of all variables
-  props <- descriptor_vars %>% 
-    filter(original_variable %in% test_vars)
+  props <- train_vars %>% 
+    filter(original_variable %in% test_vars$original_variable)
   
   good_vars <- props$original_variable
-  not_in_test <- setdiff(descriptor_vars$original_variable, test_vars)
-  not_in_train <- setdiff(test_vars, descriptor_vars$original_variable)
-  
+  varcomp <- select(train_vars, original_variable) %>% 
+    add_column(in_train = TRUE) %>% 
+    full_join(test_vars %>% add_column(in_test = TRUE), by="original_variable") %>% 
+    mutate(
+      in_train = replace_na(in_train, FALSE),
+      in_test = replace_na(in_test, FALSE)
+    )
+  not_in_test <- varcomp %>% filter(in_train & !in_test) %>% pull(original_variable)
+  not_in_train <- varcomp %>% filter(!in_train & in_test) %>% pull(original_variable)
+
   cols_real <- props %>% filter(!null & real) %>% pull(original_variable)
   cols_int <- props %>% filter(!null & integer) %>% pull(original_variable)
   cols_numcat <- props %>% filter(!null & numcat) %>% pull(original_variable)
@@ -132,6 +142,7 @@ process_test_data <- function(raw, train, verbose=FALSE) {
   d_real <- dg[, cols_real]
   d_int <- dg[, cols_int]
   d_cat <- dg[, cols_cat] 
+  
   if(ncol(d_cat) > 0) {
     d_cat <- d_cat %>% 
       mutate_all(convert_yes_no) %>%
@@ -158,6 +169,8 @@ process_test_data <- function(raw, train, verbose=FALSE) {
       pull(variable)
     cat_props <- cat_props %>% filter(!(variable %in% mismatch))
     d_cat <- d_cat %>% select(-all_of(mismatch))
+  } else {
+    mismatch <- character(0)
   }
   
   # all variable info
@@ -176,10 +189,11 @@ process_test_data <- function(raw, train, verbose=FALSE) {
     cat(sprintf("    %3d training variables not found in test set\n", length(not_in_test)))
     cat(sprintf("    %3d categorical variables with mismatched levels\n", length(mismatch)))
   }
-    
+  
   list(
     variables = vars,
-    cols_id = cols_id,
+    variable_comparison = varcomp,
+    cols_id = train$cols_id,
     not_in_test = not_in_test,
     not_in_train = not_in_train,
     mismatched_levels = mismatch,

@@ -1,7 +1,7 @@
 # Run random forest on the set 'set', for the response variable 'resp_var'
 random_forest_model <- function(set, resp_var, min_unique, min_good, max_cat_levels=10, sel=NULL, seed=666, ...) {
   set.seed(seed)
-  d <- select_predictors_for_models(set, resp_var, min_unique, min_good, max_cat_levels, sel=sel) %>% 
+  d <- select_predictors_selecteds(set, resp_var, min_unique, min_good, max_cat_levels, sel=sel) %>% 
     drop_na()
   rows <- d$Name
   d <- d %>% select(-Name)
@@ -103,7 +103,7 @@ make_rf_xdat <- function(dat, x_var) {
 predict_new_rf_exp <- function(set, resp_var, newdat, min_unique=2, min_good=1500, max_cat_levels=10, seed=123, n_tree=1000) {
   
   # match good variables from the training with variables in the new set
-  train <- select_predictors_for_models(set, resp_var, min_unique, min_good, max_cat_levels) %>%
+  train <- select_predictors_selecteds(set, resp_var, min_unique, min_good, max_cat_levels) %>%
     select(-c(Name, response))
   common_vars <- intersect(colnames(train), colnames(newdat))
   
@@ -135,12 +135,12 @@ predict_new_rf_exp <- function(set, resp_var, newdat, min_unique=2, min_good=150
 }
 
 # returns models and predictions with errors for a set of experimental variables
-predict_new_rf_exps <- function(set, newdat, min_unique=2, min_good=1500, max_cat_levels=10, seed=123, verbose=FALSE) {
-  if(verbose) cat("Predicting variables:\n")
-  resp_vars <- set$variables %>% filter(response) %>% pull(variable)
+predict_new_rf_exps <- function(train_set, test_set, min_unique=2, min_good=1500, max_cat_levels=10, seed=123, verbose=FALSE) {
+  if(verbose) cat("\nPredicting responses:\n")
+  resp_vars <- train_set$variables %>% filter(response) %>% pull(variable)
   mdls <- map(resp_vars, function(resp_var) {
     if(verbose) cat(paste("    ", resp_var, "\n"))
-    pr <- predict_new_rf_exp(set, resp_var, newdat, min_unique, min_good, max_cat_levels, seed)
+    pr <- predict_new_rf_exp(train_set, resp_var, test_set$tab, min_unique, min_good, max_cat_levels, seed)
   }) %>% 
     set_names(resp_vars)
   
@@ -153,6 +153,8 @@ predict_new_rf_exps <- function(set, newdat, min_unique=2, min_good=1500, max_ca
   imp <- rf_importance(mdls)
   
   list(
+    train_variables = train_set$variables,
+    variable_comparison = test_set$variable_comparison,
     models = mdls,
     predictions = pr,
     importance = imp

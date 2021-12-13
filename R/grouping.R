@@ -35,13 +35,13 @@ group_clusters <- function(cut_clust, props) {
 
 
 
-# Cluster numerical variables - compound descriptors and software predictors separately -
+# Cluster numerical variables 
 # into groups of similar variables, based on correlation clustering.
 #
 # Adds new columns to "variables":
 #  - cluster - cluster ID the variables belongs to
 #  - representative - logical, if true the variable represents the cluster
-#  - grouped - selection of all grouped variables, that is grouped descriptors and everything else
+#  - selected - selection of all selected variables, that is selected descriptors and everything else - these are variables that go into the model
 
 group_variables <- function(tab, variables, cut_tree=0.25, min_unique=100) {
   vars_num <- variables %>% filter(class == "numeric" & !mis & !null & unique > min_unique)
@@ -55,7 +55,7 @@ group_variables <- function(tab, variables, cut_tree=0.25, min_unique=100) {
   vars <- variables %>% 
     left_join(select(desc_hc_cut, -n), by="variable") %>% 
     mutate(representative = variable %in% desc_hc_groups$representative) %>% 
-    mutate(grouped = representative | !(variable %in% vars_num$variable))
+    mutate(selected = representative | !(variable %in% vars_num$variable))
 
   list(
     variables = vars,
