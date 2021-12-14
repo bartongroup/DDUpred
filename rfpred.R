@@ -14,6 +14,8 @@ option_list <- list(
               help="Minimum number of good values in each variable.")
 )
 
+cat(paste("\n  RFpred", VERSION, "\n\n"))
+
 op <- OptionParser(option_list=option_list)
 opt <- parse_args(op)
 
