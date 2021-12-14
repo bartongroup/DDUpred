@@ -96,7 +96,7 @@ missing_stats <- function(d, id_cols, n_top = 30) {
 convert_yes_no <- function(x) {
   map_chr(x, function(s) {
     if(is.na(s)) return(NA)
-    if(str_detect(s, "^(Yes|No)")) {
+    if(str_detect(s, "^(Yes|No|High|Low|SupSat|Non_SupSat)")) {
       s <- str_remove(s, "\\s+\\(\\d+%\\)$")
     } else if(s == "NoSites") {
       s <- NA
@@ -222,4 +222,13 @@ test_min_good <- function(set, resp_var, min_unique=2, max_cat_levels=10, min_ra
   })
   close(pb)
   tb
+}
+
+# check if levels in test set are a subset of levels in the train set
+levels_mismatch <- function(m) {
+  m %>%
+    mutate_at(vars(test_levels, train_levels), ~str_split(.x, ",")) %>% 
+    rowwise() %>% 
+    mutate(matched = all(test_levels %in% train_levels)) %>% 
+    mutate_at(vars(test_levels, train_levels), ~str_c(.x, collapse=","))
 }

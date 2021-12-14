@@ -157,7 +157,8 @@ predict_new_rf_exps <- function(train_set, test_set, min_unique=2, min_good=1500
     variable_comparison = test_set$variable_comparison,
     models = mdls,
     predictions = pr,
-    importance = imp
+    importance = imp,
+    mismatched_levels = test_set$mismatched_levels
   )
 }
 

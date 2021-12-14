@@ -165,12 +165,14 @@ process_test_data <- function(raw, train, verbose=FALSE) {
     left_join(props, by="variable")
   if(!is.null(cat_match$levels.x)) {
     mismatch <- cat_match %>% 
-      filter(levels.x != levels.y) %>% 
-      pull(variable)
-    cat_props <- cat_props %>% filter(!(variable %in% mismatch))
-    d_cat <- d_cat %>% select(-all_of(mismatch))
+      select(variable, test_levels = levels.x, train_levels = levels.y) %>% 
+      levels_mismatch() %>% 
+      filter(!matched) %>% 
+      select(-matched)
+    cat_props <- cat_props %>% filter(!(variable %in% mismatch$variable))
+    d_cat <- d_cat %>% select(-all_of(mismatch$variable))
   } else {
-    mismatch <- character(0)
+    mismatch <- tibble(variable = character(0))
   }
   
   # all variable info
@@ -183,11 +185,12 @@ process_test_data <- function(raw, train, verbose=FALSE) {
   
   if(verbose) {
     cat("  Variables found:\n")
-    cat(sprintf("    %3d variables in test set\n", length(test_vars)))
+    cat(sprintf("    %3d variables in test set\n", nrow(test_vars)))
     cat(sprintf("    %3d selected variables in the training set\n",nrow(descriptor_vars)))
     cat(sprintf("    %3d test variables match training set\n", nrow(vars)))
     cat(sprintf("    %3d training variables not found in test set\n", length(not_in_test)))
-    cat(sprintf("    %3d categorical variables with mismatched levels\n", length(mismatch)))
+    cat(sprintf("    %3d categorical variables with mismatched levels\n", nrow(mismatch)))
+    if(nrow(mismatch) > 0) cat(paste("        ", paste(mismatch$variable, collapse=", "), "\n"))
   }
   
   list(
