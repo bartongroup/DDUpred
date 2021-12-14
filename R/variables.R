@@ -200,7 +200,7 @@ reduce_for_levels <- function(tab, min_unique) {
 }
 
 # For a given data set 'set', response variable 'resp_var', create a subset of the main set, with variables with at least 'min_unique' unique values, at least 'min_good' good (non-missing) values, at most 'max_cat_levels' levels in categorical variables. The subset is done of selected (cluster centroids) variables with no 'mis' flag. 
-select_predictors_selecteds <- function(set, resp_var, min_unique, min_good, max_cat_levels, sel=NULL) {
+select_predictors_for_models <- function(set, resp_var, min_unique, min_good, max_cat_levels, sel=NULL) {
   pred <- set$variables %>% 
     filter(predictor & !null & !mis & selected & good >= min_good & (class == "numeric" | unique <= max_cat_levels)) 
   if(!is.null(sel)) pred <- filter(pred, variable %in% sel)
@@ -216,7 +216,7 @@ test_min_good <- function(set, resp_var, min_unique=2, max_cat_levels=10, min_ra
   max_range <- nrow(set$tab)
   pb <- txtProgressBar(min = 1, max = max_range - min_range + 1, initial = 1, style = 3)
   tb <- map_dfr(min_range:max_range, function(mg) {
-    x <- select_predictors_selecteds(set, resp_var, min_unique=min_unique, min_good=mg, max_cat_levels=max_cat_levels)
+    x <- select_predictors_for_models(set, resp_var, min_unique=min_unique, min_good=mg, max_cat_levels=max_cat_levels)
     setTxtProgressBar(pb, mg - min_range + 1)
     c(min_good = mg, n_rows = nrow(x), n_cols = ncol(x) - 2)
   })

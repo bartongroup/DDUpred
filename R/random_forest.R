@@ -1,7 +1,7 @@
 # Run random forest on the set 'set', for the response variable 'resp_var'
 random_forest_model <- function(set, resp_var, min_unique, min_good, max_cat_levels=10, sel=NULL, seed=666, ...) {
   set.seed(seed)
-  d <- select_predictors_selecteds(set, resp_var, min_unique, min_good, max_cat_levels, sel=sel) %>% 
+  d <- select_predictors_for_models(set, resp_var, min_unique, min_good, max_cat_levels, sel=sel) %>% 
     drop_na()
   rows <- d$Name
   d <- d %>% select(-Name)
@@ -103,7 +103,7 @@ make_rf_xdat <- function(dat, x_var) {
 predict_new_rf_exp <- function(set, resp_var, newdat, min_unique=2, min_good=1500, max_cat_levels=10, seed=123, n_tree=1000) {
   
   # match good variables from the training with variables in the new set
-  train <- select_predictors_selecteds(set, resp_var, min_unique, min_good, max_cat_levels) %>%
+  train <- select_predictors_for_models(set, resp_var, min_unique, min_good, max_cat_levels) %>%
     select(-c(Name, response))
   common_vars <- intersect(colnames(train), colnames(newdat))
   
