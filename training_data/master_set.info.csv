@@ -22,3 +22,5 @@ Exp_pKa-Sirius PKA3,none
 G+_pH7.4_S+Acidic_pKa,none
 G+_pH7.4_S+Mixed_pKa,none
 G+_pH7.4_S+Basic_pKa,none
+G+_pH7.4_AcidAtoms,none
+G+_pH7.4_BaseAtoms,none
