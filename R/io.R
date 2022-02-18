@@ -36,3 +36,49 @@ rename_for_vd <- function() {
     rename(ren) %>% 
     write_csv("data/Inem_18_mastersheet_lombardo.csv")
 }
+
+
+read_excel_ph <- function(file, verbose=FALSE) {
+  if(verbose) cat(paste("\nReading data from", file, "\n"))
+  d <- readxl::read_excel(file) %>% 
+    rename(Name = ID)
+  if(verbose) cat(paste("   ", nrow(d), "rows,", ncol(d), "columns\n"))
+  d
+}
+
+merge_ph <- function(desc_file, ph2_file, verbose=TRUE) {
+  desc <- read_excel_ph(desc_file, verbose)
+  ph2 <- read_excel_ph(ph2_file, verbose)
+
+  ph2_sel <- ph2 %>% 
+    select("Name", where(is.numeric))
+  ph_cols <- colnames(ph2_sel)[2:ncol(ph2_sel)]
+  if(verbose) cat(paste("\npH columns found:", paste(ph_cols, collapse = ", "), "\n"))
+  
+  desc_cols <- desc %>% 
+    select(where(is.numeric)) %>% 
+    colnames()
+  
+  mtch <- ph_cols %in% desc_cols
+  if(!all(mtch)) {
+    cat(paste("\nError: pH columns not found in the descriptor file:", paste(ph_cols[!mtch], collapse = ","), "\n"))
+    stop()
+  }
+  
+  desc_sel <- desc %>% 
+    select("Name", all_of(ph_cols))
+  desc_rest <- desc %>% 
+    select(-all_of(ph_cols))
+  
+  ph2_names <- glue::glue("G+_pH2_{ph_cols}")
+  desc_names <- glue::glue("G+_ph7.4_{ph_cols}")
+  
+  if(verbose) cat(paste("\nCreating columns", paste(c(ph2_names, desc_names), collapse = ", "), "in the output file.\n"))
+  
+  colnames(ph2_sel) <- c("Name", ph2_names)
+  colnames(desc_sel) <- c("Name", desc_names)
+  
+  desc_rest %>% 
+    left_join(desc_sel, by = "Name") %>% 
+    left_join(ph2_sel, by = "Name")
+}

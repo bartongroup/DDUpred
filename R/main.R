@@ -1,10 +1,5 @@
 VERSION <- "v0.1.0"
 
-suppressPackageStartupMessages({
-  library(fitdistrplus)
-  library(randomForest)
-  library(tidyverse)
-})
 source("R/process.R")
 source("R/variables.R")
 source("R/io.R")

@@ -1,4 +1,11 @@
-suppressPackageStartupMessages(library(optparse))
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages({
+  library(optparse)
+  library(fitdistrplus)
+  library(randomForest)
+  library(tidyverse)
+})
 source("R/main.R")
 
 option_list <- list(
