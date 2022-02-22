@@ -274,6 +274,21 @@
         "vctrs"
       ]
     },
+    "drupr": {
+      "Package": "drupr",
+      "Version": "0.1.0",
+      "Source": "Local",
+      "RemoteType": "local",
+      "RemoteUrl": "/Users/mgierlinski/Work/Biology/Projects/drupr_0.1.0.tgz",
+      "Hash": "436c3d3b2d829674662412e562b25d13",
+      "Requirements": [
+        "fitdistrplus",
+        "glue",
+        "randomForest",
+        "readxl",
+        "tidyverse"
+      ]
+    },
     "dtplyr": {
       "Package": "dtplyr",
       "Version": "1.2.0",
@@ -334,6 +349,17 @@
       "Repository": "CRAN",
       "Hash": "77bd60a6157420d4ffa93b27cf6a58b8",
       "Requirements": []
+    },
+    "fitdistrplus": {
+      "Package": "fitdistrplus",
+      "Version": "1.1-6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "19b33e886faed2937ec5057e157fa84b",
+      "Requirements": [
+        "MASS",
+        "survival"
+      ]
     },
     "forcats": {
       "Package": "forcats",
@@ -788,6 +814,14 @@
         "rlang"
       ]
     },
+    "randomForest": {
+      "Package": "randomForest",
+      "Version": "4.6-14",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6367ba8128568cc5ebf8082e440948e4",
+      "Requirements": []
+    },
     "rappdirs": {
       "Package": "rappdirs",
       "Version": "0.3.3",
@@ -969,6 +1003,16 @@
         "glue",
         "magrittr",
         "stringi"
+      ]
+    },
+    "survival": {
+      "Package": "survival",
+      "Version": "3.2-13",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6f0a0fadc63bc6570fe172770f15bbc4",
+      "Requirements": [
+        "Matrix"
       ]
     },
     "sys": {
