@@ -2,17 +2,9 @@
 
 suppressPackageStartupMessages({
   library(optparse)
-  library(fitdistrplus)
-  library(randomForest)
+  library(drupr)
   library(tidyverse)
 })
-
-source("R/process.R")
-source("R/variables.R")
-source("R/io.R")
-source("R/grouping.R")
-source("R/random_forest.R")
-source("R/main.R")
 
 option_list <- list(
   make_option(c("-t", "--training-file"), action="store", default=NA, type='character',
@@ -36,6 +28,24 @@ if(is.na(opt$`training-file`) | is.na(opt$`info-file`) | is.na(opt$`test-file`) 
   print_help(op)
   stop("Option(s) missing")
 }
+
+write_res <- function(d, odir, file) {
+  d %>%
+    mutate_if(is.numeric, ~signif(.x, 4)) %>%
+    write_csv(file.path(odir, file))
+}
+
+write_results <- function(pred, out_dir) {
+  if(!dir.exists(out_dir)) dir.create(out_dir)
+  
+  write_res(pred$missing, out_dir, "missing.csv")
+  write_res(pred$predictions, out_dir, "predictions.csv")
+  write_res(pred$importance, out_dir, "importance.csv")
+  write_res(pred$train_variables, out_dir, "train_variables.csv")
+  write_res(pred$variable_comparison, out_dir, "variable_comparison.csv")
+  write_res(pred$mismatched_levels, out_dir, "mismatched_levels.csv")
+}
+
 
 # Predictions
 

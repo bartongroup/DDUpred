@@ -2,9 +2,9 @@
 
 suppressPackageStartupMessages({
   library(optparse)
+  library(drupr)
   library(tidyverse)
 })
-source("../R/io.R")
 
 option_list <- list(
   make_option(c("-i", "--input-file"), action="store", default=NA, type='character',

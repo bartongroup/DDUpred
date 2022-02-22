@@ -2,6 +2,7 @@
 
 suppressPackageStartupMessages({
   library(optparse)
+  library(drupr)
   library(tidyverse)
 })
 source("../R/io.R")
