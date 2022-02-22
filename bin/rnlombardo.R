@@ -25,7 +25,7 @@ if(is.na(opt$`input-file`) |  is.na(opt$`output-file`)) {
   stop("Option(s) missing")
 }
 
-rename_for_vd(opt$`input-file`, opt$`rename-file`) %>% 
+rename_for_vd(opt$`input-file`, opt$`rename-file`, verbose=TRUE) %>% 
   write_csv(opt$`output-file`)
 
 
