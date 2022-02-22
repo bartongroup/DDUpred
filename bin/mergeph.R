@@ -4,7 +4,7 @@ suppressPackageStartupMessages({
   library(optparse)
   library(tidyverse)
 })
-source("R/main.R")
+source("../R/io.R")
 
 option_list <- list(
   make_option(c("-d", "--descriptor-file"), action="store", default=NA, type='character',

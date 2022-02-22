@@ -6,6 +6,12 @@ suppressPackageStartupMessages({
   library(randomForest)
   library(tidyverse)
 })
+
+source("R/process.R")
+source("R/variables.R")
+source("R/io.R")
+source("R/grouping.R")
+source("R/random_forest.R")
 source("R/main.R")
 
 option_list <- list(
@@ -18,7 +24,7 @@ option_list <- list(
   make_option(c("-o", "--output-dir"), action="store", default=NA, type='character',
               help="Output directory where all results will be written."),
   make_option(c("-m", "--min-good"), action="store", default=NA, type='integer',
-              help="Minimum number of good values in each variable.")
+              help="Minimum number of good values in each training variable. Only variables (columns) in the training file with at least that many non-missing values will be used. Results might vary, but using about two-thirds of the number of the training compunds will do.")
 )
 
 cat(paste("\n  RFpred", VERSION, "\n\n"))
