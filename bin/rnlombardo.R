@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+renv::load("/Users/mgierlinski/Projects/DDUpred")
+
 suppressPackageStartupMessages({
   library(optparse)
   library(drupr)

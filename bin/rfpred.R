@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+renv::load("/Users/mgierlinski/Projects/DDUpred")
+
 suppressPackageStartupMessages({
   library(optparse)
   library(drupr)
@@ -19,7 +21,7 @@ option_list <- list(
               help="Minimum number of good values in each training variable. Only variables (columns) in the training file with at least that many non-missing values will be used. Results might vary, but using about two-thirds of the number of the training compunds will do.")
 )
 
-cat(paste("\n  RFpred", VERSION, "\n\n"))
+cat(paste("\n  RFpred", packageVersion("drupr"), "\n\n"))
 
 op <- OptionParser(option_list=option_list)
 opt <- parse_args(op)

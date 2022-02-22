@@ -1,11 +1,12 @@
 #!/usr/bin/env Rscript
 
+renv::load("/Users/mgierlinski/Projects/DDUpred")
+
 suppressPackageStartupMessages({
   library(optparse)
   library(drupr)
   library(tidyverse)
 })
-source("../R/io.R")
 
 option_list <- list(
   make_option(c("-d", "--descriptor-file"), action="store", default=NA, type='character',
