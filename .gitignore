@@ -4,6 +4,5 @@
 .Ruserdata
 .DS_Store
 renv
-data
-results_lombardo
-results_master
+results/
+test_data/
