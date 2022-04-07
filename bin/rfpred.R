@@ -46,6 +46,7 @@ write_results <- function(pred, out_dir) {
   write_res(pred$train_variables, out_dir, "train_variables.csv")
   write_res(pred$variable_comparison, out_dir, "variable_comparison.csv")
   write_res(pred$mismatched_levels, out_dir, "mismatched_levels.csv")
+  write_res(pred$test_data, out_dir, "test_data.csv")
 }
 
 

@@ -281,11 +281,11 @@
     },
     "drupr": {
       "Package": "drupr",
-      "Version": "0.1.2",
+      "Version": "0.1.5",
       "Source": "Local",
       "RemoteType": "local",
-      "RemoteUrl": "../drupr_0.1.2.tar.gz",
-      "Hash": "1eb69ceff2d1af04a19dc5eff70ef4d9",
+      "RemoteUrl": "../drupr_0.1.5.tgz",
+      "Hash": "1e30d82bfe9a6ab2cb3ac92fd0a0d264",
       "Requirements": [
         "fitdistrplus",
         "glue",
