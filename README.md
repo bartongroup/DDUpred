@@ -25,12 +25,12 @@ bin/mergeph.R -d excel_files/647/647_structures2_export_descriptors.xlsx -p exce
 
 creates a file `test_data/647_set.csv` which can be used for predictions.
 
-### Rename columns for Lombardo set
+### Run predictor
  
-A test data set should be a CSV file with the same columns as in the training set. Predictor is an R script, so it can be called as in this example
+Predictor is called as in this example:
  
  ```
-rfpred.R -t training_data/master.csv.gz -i training_data/master.info.csv -s test_data/Inem_18_mastersheet.csv -o results/Inem18 -m 1500
+rfpred.R -t training_data/master.csv.gz -i training_data/master.info.csv -s test_data/647_set.csv -o results/647 -m 500
 ```
 
 The `-m` parameter is important and needs to be specify. It tells the predictor to ignore variables (columns) with less than m non-missing values.
