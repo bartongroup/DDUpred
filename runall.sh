@@ -17,6 +17,7 @@ bin/rfpred.R \
 bin/mergeph.R \
   -d excel_files/647/647_structures2_export_descriptors.xlsx \
   -p excel_files/647/647_structures2_export_pH2.xlsx \
+  -m excel_files/647/647_Moka_incl_designation.xlsx \
   -o test_data/647_set.csv
 bin/rfpred.R \
   -t training_data/master.csv.gz \
