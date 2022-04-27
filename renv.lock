@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.1.2",
+    "Version": "4.2.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -281,11 +281,11 @@
     },
     "drupr": {
       "Package": "drupr",
-      "Version": "0.1.5",
+      "Version": "0.1.6",
       "Source": "Local",
       "RemoteType": "local",
-      "RemoteUrl": "../drupr_0.1.5.tgz",
-      "Hash": "1e30d82bfe9a6ab2cb3ac92fd0a0d264",
+      "RemoteUrl": "../drupr_0.1.6.tgz",
+      "Hash": "9234ea099cd9db8c3a15a9c3977800d0",
       "Requirements": [
         "fitdistrplus",
         "glue",
