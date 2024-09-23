@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-renv::load("/Users/mgierlinski/Projects/DDUpred")
+# renv::load("/Users/mgierlinski/Projects/DDUpred")
 
 suppressPackageStartupMessages({
   library(optparse)
